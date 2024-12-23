@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Adam Asmaca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1e1e2a;
+            --bg-secondary: #2c2c3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-color: #6a5acd;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+        }
+
+        #game-container {
+            background-color: rgba(44, 44, 58, 0.8);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            width: 600px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            transform: rotateX(10deg) rotateY(-10deg);
+            transition: all 0.5s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #game-container:hover {
+            transform: rotateX(0) rotateY(0);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, var(--accent-color), #a78fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #word-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .letter-box {
+            width: 50px;
+            height: 70px;
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5em;
+            color: var(--text-primary);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .keyboard-button {
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .keyboard-button:hover {
+            background-color: var(--accent-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .keyboard-button.disabled {
+            background-color: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .keyboard-button.correct {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .keyboard-button.incorrect {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        #game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            color: var(--text-secondary);
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #color-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .color-slider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .color-slider input[type="range"] {
+            width: 150px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #ff0000, #00ff00, #0000ff);
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        .color-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+<div id="game-container">
+    <h1>Adam Asmaca</h1>
+    <div id="word-display"></div>
+    <div id="keyboard"></div>
+    
+    <div id="game-stats">
+        <div id="remaining-guesses">Kalan Hak: 6</div>
+        <div id="score">Skor: 0</div>
+    </div>
+    
+    <div id="message"></div>
+    
+    <div id="color-controls">
+        <div class="color-slider">
+            <label for="redSlider">Kırmızı</label>
+            <input type="range" id="redSlider" min="0" max="255" value="255">
+        </div>
+        <div class="color-slider">
+            <label for="greenSlider">Yeşil</label>
+            <input type="range" id="greenSlider" min="0" max="255" value="255">
+        </div>
+        <div class="color-slider">
+            <label for="blueSlider">Mavi</label>
+            <input type="range" id="blueSlider" min="0" max="255" value="255">
+        </div>
+    </div>
+</div>
+
+<script>
+    const words = [
+        "YENİ YIL TATİLİ", "BİLİMSEL ARAŞTIRMA", "TEKNOLOJİK ARAŞTIRMA", 
+        "SOSYAL ARAŞTIRMA", "TARİHİ ARAŞTIRMA", "ARKEOLOJİK ARAŞTIRMA", 
+        "ANTROPOLOJİK ARAŞTIRMA", "MİTOLOJİK ARAŞTIRMA", "HAYVAN BARINAĞI", 
+        "HAYVANAT BAHÇESİ", "DOĞA PARKI", "MİLLİ PARK", "TABİAT REZERV", 
+        "KORUMA ALANI", "YEŞİL ALAN", "MESİRE YERİ", "KAMP ALANI", "PİKNİK ALANI"
+    ];
+
+    let chosenWord = "";
+    let displayedWord = "";
+    let incorrectGuesses = 0;
+    const maxIncorrectGuesses = 6;
+    let score = 0;
+    
+    const wordDisplay = document.getElementById('word-display');
+    const keyboardDiv = document.getElementById('keyboard');
+    const remainingGuessesDisplay = document.getElementById('remaining-guesses');
+    const messageDiv = document.getElementById('message');
+    const scoreDisplay = document.getElementById('score');
+    const redSlider = document.getElementById('redSlider');
+    const greenSlider = document.getElementById('greenSlider');
+    const blueSlider = document.getElementById('blueSlider');
+
+    const turkishQKeyboard = [
+        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
+        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ş', 'İ'],
+        ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç']
+    ];
+
+    function startGame() {
+        chosenWord = words[Math.floor(Math.random() * words.length)].toUpperCase();
+        displayedWord = chosenWord.split('').map(char => char === ' ' ? ' ' : '_').join('');
+        renderWordDisplay();
+        incorrectGuesses = 0;
+        messageDiv.textContent = "";
+        createKeyboard();
+        updateRemainingGuesses();
+        updateScore();
+    }
+
+    function renderWordDisplay() {
+        wordDisplay.innerHTML = '';
+        displayedWord.split('').forEach(letter => {
+            const letterBox = document.createElement('div');
+            letterBox.className = 'letter-box';
+            letterBox.textContent = letter === ' ' ? ' ' : letter;
+            wordDisplay.appendChild(letterBox);
+        });
+    }
+
+    function createKeyboard() {
+        keyboardDiv.innerHTML = '';
+        turkishQKeyboard.forEach(row => {
+            const keyboardRowDiv = document.createElement('div');
+            keyboardRowDiv.className = 'keyboard-row';
+            row.forEach(key => {
+                const button = document.createElement('button');
+                button.className = 'keyboard-button';
+                button.textContent = key;
+                button.addEventListener('click', () => handleGuess(key));
+                keyboardRowDiv.appendChild(button);
+            });
+            keyboardDiv.appendChild(keyboardRowDiv);
+        });
+    }
+
+    function updateScore() {
+        scoreDisplay.textContent = `Skor: ${score}`;
+    }
+
+    function handleGuess(letter) {
+        if (displayedWord.includes(letter) || incorrectGuesses >= maxIncorrectGuesses) return;
+
+        let correctGuess = false;
+        let newDisplayedWord = '';
+        for (let i = 0; i < chosenWord.length; i++) {
+            if (chosenWord[i] === ' ') {
+                newDisplayedWord += ' ';
+                continue;
+            }
+            
+            if (chosenWord[i] === letter) {
+                newDisplayedWord += letter;
+                correctGuess = true;
+            } else {
+                newDisplayedWord += displayedWord[i] === ' ' ? ' ' : displayedWord[i];
+            }
+        }
+        displayedWord = newDisplayedWord;
+        renderWordDisplay();
+
+        const clickedButton = Array.from(keyboardDiv.querySelectorAll('.keyboard-button')).find(button => button.textContent === letter);
+
+        if (!correctGuess) {
+            incorrectGuesses++;
+            if (clickedButton) {
+                clickedButton.classList.add('incorrect');
+                setTimeout(() => {
+                    clickedButton.classList.remove('incorrect');
+                }, 500);
+            }
+        } else {
+            if (clickedButton) {
+                clickedButton.classList.add('correct');
+                setTimeout(() => {
+                    clickedButton.classList.remove('correct');
+                }, 500);
+            }
+        }
+        if (clickedButton) {
+            clickedButton.classList.add('disabled');
+            clickedButton.disabled = true;
+        }
+        updateRemainingGuesses();
+        checkGameStatus();
+    }
+
+    function updateRemainingGuesses() {
+        remainingGuessesDisplay.textContent = `Kalan Hak: ${maxIncorrectGuesses - incorrectGuesses}`;
+    }
+
+    function checkGameStatus() {
+        if (displayedWord === chosenWord) {
+            messageDiv.textContent = "Tebrikler, kazandınız!";
+            score += 100;
+            endGame();
+        } else if (incorrectGuesses >= maxIncorrectGuesses) {
+            messageDiv.textContent = `Kaybettiniz! Doğru kelime: ${chosenWord}`;
+            score -= 50;
+            endGame();
+        }
+        updateScore();
+    }
+
+    function endGame() {
+        setTimeout(() => {
+            const playAgain = confirm("Tekrar oynamak ister misiniz?");
+            if (playAgain) {
+                startGame();
+            } else {
+                messageDiv.textContent = `Oyun Bitti. Skorunuz: ${score}`;
+                keyboardDiv.innerHTML = "";
+            }
+        }, 500);
+    }
+
+    document.addEventListener('keydown', (event) => {
+        const letter = event.key.toUpperCase();
+        if (turkishQKeyboard.flat().includes(letter)) {
+            handleGuess(letter);
+        }
+    });
+
+    function updateBackgroundColor() {
+        const red = redSlider.value;
+        const green = greenSlider.value;
+        const blue = blueSlider.value;
+        document.body.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+    }
+
+    redSlider.addEventListener('input', updateBackgroundColor);
+    greenSlider.addEventListener('input', updateBackgroundColor);
+    blueSlider.addEventListener('input', updateBackgroundColor);
+
+    startGame();
+    updateBackgroundColor();
+</script>
+</body>
+</html>

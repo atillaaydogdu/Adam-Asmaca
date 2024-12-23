@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Adam Asmaca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1e1e2a;
+            --bg-secondary: #2c2c3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-color: #6a5acd;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            transition: all 0.3s ease;
+        }
+        <div id="zoom-control">
+    <button onclick="adjustZoom(-0.1)">-</button>
+    <span id="zoom-value">100%</span>
+    <button onclick="adjustZoom(0.1)">+</button>
+</div>
+        #game-container {
+            background-color: rgba(44, 44, 58, 0.8);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            width: 1200px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) rotateY(0deg);
+            transition: all 0.5s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #game-container:hover {
+            transform: rotateX(0) rotateY(0);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, var(--accent-color), #a78fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #word-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 50px;
+        }
+
+        .letter-box {
+            width: 50px;
+            height: 70px;
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5em;
+            color: var(--text-primary);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        #color-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.color-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-slider label {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.color-slider input[type="range"] {
+    width: 150px;
+    -webkit-appearance: none;
+    height: 5px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #000, #f00);
+    cursor: pointer;
+}
+
+.color-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+        .keyboard-button {
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 2.2em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .keyboard-button:hover {
+            background-color: var(--accent-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .keyboard-button.disabled {
+            background-color: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .keyboard-button.correct {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .keyboard-button.incorrect {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        #game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            color: var(--text-secondary);
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        #theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Light tema için stiller */
+        body.light-theme {
+            --bg-primary: #f0f0f0;
+            --bg-secondary: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+        }
+        #zoom-control {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: var(--bg-secondary);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+#zoom-control button {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+
+#zoom-control button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#zoom-value {
+    color: var(--text-primary);
+    font-weight: bold;
+    min-width: 60px;
+    text-align: center;
+}
+    </style>
+</head>
+<body>
+<button id="theme-toggle">🌓 Tema Değiştir</button>
+<div id="game-container">
+    <h1>Adam Asmaca</h1>
+    <div id="word-display"></div>
+    <div id="keyboard"></div>
+    
+    <div id="game-stats">
+        <div id="remaining-guesses">Kalan Hak: 6</div>
+        <div id="score">Skor: 0</div>
+    </div>
+    
+    <div id="message"></div>
+    <div id="color-controls">
+        <div class="color-slider">
+            <label for="redSlider">Kırmızı</label>
+            <input type="range" id="redSlider" min="0" max="255" value="30">
+        </div>
+        <div class="color-slider">
+            <label for="greenSlider">Yeşil</label>
+            <input type="range" id="greenSlider" min="0" max="255" value="30">
+        </div>
+        <div class="color-slider">
+            <label for="blueSlider">Mavi</label>
+            <input type="range" id="blueSlider" min="0" max="255" value="42">
+        </div>
+    </div>
+</div>
+<script>
+    const words = [
+        "PYTHON", "JAVASCRIPT", "HTML", "CSS", "JAVA", "REACT", "ANGULAR", "VUE",
+        "NODE", "EXPRESS", "MONGODB", "MYSQL", "POSTGRESQL", "PHP", "RUBY", "SWIFT",
+        "KOTLIN", "FLUTTER", "DART", "GOLANG", "RUST", "SCALA", "HASKELL", "PERL"
+    ];
+
+    let chosenWord = "";
+    let displayedWord = "";
+    let incorrectGuesses = 0;
+    const maxIncorrectGuesses = 6;
+    let score = 0;
+    
+    const wordDisplay = document.getElementById('word-display');
+    const keyboardDiv = document.getElementById('keyboard');
+    const remainingGuessesDisplay = document.getElementById('remaining-guesses');
+    const messageDiv = document.getElementById('message');
+    const scoreDisplay = document.getElementById('score');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    const turkishQKeyboard = [
+        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
+        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ş', 'İ'],
+        ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç']
+    ];
+
+    // Tema değiştirme fonksiyonu
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isDarkTheme = !document.body.classList.contains('light-theme');
+        themeToggle.textContent = isDarkTheme ? '🌓 Tema Değiştir' : '🌓 Tema Değiştir';
+    });
+// Zoom kontrolü için değişkenler ve fonksiyonlar
+let currentZoom = 1;
+const gameContainer = document.getElementById('game-container');
+const zoomValue = document.getElementById('zoom-value');
+
+function adjustZoom(delta) {
+    currentZoom = Math.max(0.5, Math.min(2, currentZoom + delta)); // 50% ile 200% arası sınırlama
+    gameContainer.style.transform = `scale(${currentZoom})`;
+    zoomValue.textContent = `${Math.round(currentZoom * 100)}%`;
+    
+    // Container'ın margin'ini ayarla
+    const marginValue = (currentZoom - 1) * 300; // Zoom seviyesine göre margin ayarı
+    gameContainer.style.margin = `${marginValue}px`;
+}
+
+// Fare tekerleği ile zoom kontrolü
+gameContainer.addEventListener('wheel', (e) => {
+    if (e.ctrlKey) { // Sadece Ctrl tuşu basılıyken çalışır
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        adjustZoom(delta);
+    }
+});
+    function startGame() {
+        chosenWord = words[Math.floor(Math.random() * words.length)];
+        displayedWord = chosenWord.split('').map(char => '_').join('');
+        renderWordDisplay();
+        incorrectGuesses = 0;
+        messageDiv.textContent = "";
+        createKeyboard();
+        updateRemainingGuesses();
+        updateScore();
+    }
+
+    function renderWordDisplay() {
+        wordDisplay.innerHTML = '';
+        displayedWord.split('').forEach(letter => {
+            const letterBox = document.createElement('div');
+            letterBox.className = 'letter-box';
+            letterBox.textContent = letter;
+            wordDisplay.appendChild(letterBox);
+        });
+    }
+
+    function createKeyboard() {
+        keyboardDiv.innerHTML = '';
+        turkishQKeyboard.forEach(row => {
+            const keyboardRowDiv = document.createElement('div');
+            keyboardRowDiv.className = 'keyboard-row';
+            row.forEach(key => {
+                const button = document.createElement('button');
+                button.className = 'keyboard-button';
+                button.textContent = key;
+                button.addEventListener('click', () => handleGuess(key));
+                keyboardRowDiv.appendChild(button);
+            });
+            keyboardDiv.appendChild(keyboardRowDiv);
+        });
+    }
+
+    function updateScore() {
+        scoreDisplay.textContent = `Skor: ${score}`;
+    }
+
+    function handleGuess(letter) {
+        if (displayedWord.includes(letter) || incorrectGuesses >= maxIncorrectGuesses) return;
+
+        let correctGuess = false;
+        let newDisplayedWord = '';
+        for (let i = 0; i < chosenWord.length; i++) {
+            if (chosenWord[i] === letter) {
+                newDisplayedWord += letter;
+                correctGuess = true;
+            } else {
+                newDisplayedWord += displayedWord[i];
+            }
+        }
+        displayedWord = newDisplayedWord;
+        renderWordDisplay();
+
+        const clickedButton = Array.from(keyboardDiv.querySelectorAll('.keyboard-button'))
+            .find(button => button.textContent === letter);
+
+        if (!correctGuess) {
+            incorrectGuesses++;
+            if (clickedButton) {
+                clickedButton.classList.add('incorrect');
+            }
+        } else {
+            if (clickedButton) {
+                clickedButton.classList.add('correct');
+            }
+        }
+
+        if (clickedButton) {
+            clickedButton.classList.add('disabled');
+            clickedButton.disabled = true;
+        }
+
+        updateRemainingGuesses();
+        checkGameStatus();
+    }
+
+    function updateRemainingGuesses() {
+        remainingGuessesDisplay.textContent = `Kalan Hak: ${maxIncorrectGuesses - incorrectGuesses}`;
+    }
+
+    function checkGameStatus() {
+        if (displayedWord === chosenWord) {
+            messageDiv.textContent = "Tebrikler, kazandınız!";
+            score += 100;
+            endGame();
+        } else if (incorrectGuesses >= maxIncorrectGuesses) {
+            messageDiv.textContent = `Kaybettiniz! Doğru kelime: ${chosenWord}`;
+            score = Math.max(0, score - 50);
+            endGame();
+        }
+        updateScore();
+    }
+
+    function endGame() {
+        setTimeout(() => {
+            const playAgain = confirm("Tekrar oynamak ister misiniz?");
+            if (playAgain) {
+                startGame();
+            } else {
+                messageDiv.textContent = `Oyun Bitti. Skorunuz: ${score}`;
+                keyboardDiv.innerHTML = "";
+            }
+        }, 500);
+    }
+
+    document.addEventListener('keydown', (event) => {
+        const letter = event.key.toUpperCase();
+        if (turkishQKeyboard.flat().includes(letter)) {
+            handleGuess(letter);
+        }
+    });
+// Renk kontrolleri için event listener'lar
+const redSlider = document.getElementById('redSlider');
+const greenSlider = document.getElementById('greenSlider');
+const blueSlider = document.getElementById('blueSlider');
+
+function updateBackgroundColor() {
+    const red = redSlider.value;
+    const green = greenSlider.value;
+    const blue = blueSlider.value;
+    
+    // Ana renk
+    const mainColor = `rgb(${red}, ${green}, ${blue})`;
+    // Biraz daha koyu renk için
+    const darkerColor = `rgb(${Math.max(0, red-30)}, ${Math.max(0, green-30)}, ${Math.max(0, blue-30)})`;
+    
+    // Gradient arka plan
+    document.body.style.background = `linear-gradient(135deg, ${mainColor}, ${darkerColor})`;
+}
+
+// Slider'lara event listener ekle
+redSlider.addEventListener('input', updateBackgroundColor);
+greenSlider.addEventListener('input', updateBackgroundColor);
+blueSlider.addEventListener('input', updateBackgroundColor);
+
+// Sayfa yüklendiğinde başlangıç rengini ayarla
+updateBackgroundColor();
+    // Oyunu başlat
+    startGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Adam Asmaca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Creepster&family=Bangers&family=Rubik+Moonrocks&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        
+        #game-banner {
+    font-size: 5em;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--accent-color);
+    text-shadow: 
+        0 1px 0 #ccc,
+        0 2px 0 #c9c9c9,
+        0 3px 0 #bbb,
+        0 4px 0 #b9b9b9,
+        0 5px 0 #aaa,
+        0 6px 1px rgba(0,0,0,.1),
+        0 0 5px rgba(0,0,0,.1),
+        0 1px 3px rgba(0,0,0,.3),
+        0 3px 5px rgba(0,0,0,.2),
+        0 5px 10px rgba(0,0,0,.25),
+        0 10px 10px rgba(0,0,0,.2),
+        0 20px 20px rgba(0,0,0,.15);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+#banner-settings {
+    position: fixed;
+    top: 140px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.banner-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.setting-group label {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+.setting-group input[type="text"],
+.setting-group select {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1em;
+}
+
+.setting-group input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+        :root {
+            --bg-primary: #1e1e2a;
+            --bg-secondary: #2c2c3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-color: #6a5acd;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            transition: all 0.3s ease;
+        }
+
+        #game-container {
+            background-color: rgba(44, 44, 58, 0.8);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            width: 1200px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) rotateY(0deg);
+            transition: all 0.5s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        
+        }
+       
+        #game-container:hover {
+            transform: rotateX(0) rotateY(0);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, var(--accent-color), #a78fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #word-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 50px;
+        }
+
+        .letter-box {
+            width: 50px;
+            height: 70px;
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5em;
+            color: var(--text-primary);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        #color-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+#animation-settings {
+    position: fixed;
+    top:0px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.settings-button {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+
+.settings-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.settings-panel {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    width: 250px;
+}
+
+.settings-panel.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+.animation-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.animation-options label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.animation-options label:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Animasyon stilleri */
+.keyboard-button {
+    transition: all 0.3s ease;
+}
+
+/* Büyüme animasyonu */
+.grow-animation:hover {
+    transform: scale(1.1);
+}
+
+/* Titreşim animasyonu */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px) rotate(-1deg); }
+    75% { transform: translateX(2px) rotate(1deg); }
+}
+
+.shake-animation:hover {
+    animation: shake 0.3s ease-in-out infinite;
+}
+
+/* Dalga animasyonu */
+@keyframes ripple {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--accent-color), 0.3); }
+    100% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(var(--accent-color), 0); }
+}
+
+.ripple-animation:hover {
+    animation: ripple 0.3s ease-out infinite;
+}
+
+/* Parlama animasyonu */
+@keyframes glow {
+    0% { box-shadow: 0 0 5px var(--accent-color); }
+    50% { box-shadow: 0 0 20px var(--accent-color); }
+    100% { box-shadow: 0 0 5px var(--accent-color); }
+}
+
+.glow-animation:hover {
+    animation: glow 1s ease-in-out infinite;
+}
+
+/* 3D Döndürme animasyonu */
+@keyframes flip {
+    0% { transform: perspective(400px) rotateY(0); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+.flip-animation:hover {
+    animation: flip 0.6s ease-in-out;
+}
+
+/* Nabız animasyonu */
+@keyframes pulse {
+    0% { box-shadow: 0 0 5px var(--accent-color); }
+    50% { box-shadow: 0 0 20px var(--accent-color); }
+    100% { box-shadow: 0 0 5px var(--accent-color); }
+    0% { transform: scale(1); }
+    50% { transform: scale(2.1); }
+    100% { transform: scale(1); }
+}
+
+.pulse-animation:hover {
+    animation: pulse 0.6s ease-in-out infinite;
+}
+.color-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-slider label {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.color-slider input[type="range"] {
+    width: 150px;
+    -webkit-appearance: none;
+    height: 5px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #000, #f00);
+    cursor: pointer;
+}
+
+.color-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+      /* Klavye tuşları için mevcut CSS'i güncelleyin */
+      .keyboard-button {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 2.2em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+        .keyboard-button.disabled {
+            background-color: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .keyboard-button.correct {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .keyboard-button.incorrect {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        #game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            color: var(--text-secondary);
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        #theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Light tema için stiller */
+        body.light-theme {
+            --bg-primary: #f0f0f0;
+            --bg-secondary: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+        }
+    </style>
+</head>
+<body>
+<button id="theme-toggle">🌓 Tema Değiştir</button>
+<div id="game-container">
+    <div id="banner-settings">
+        <button id="banner-settings-toggle" class="settings-button">✏️ Banner Ayarları</button>
+        <div id="banner-settings-panel" class="settings-panel hidden">
+            <h3>Banner Ayarları</h3>
+            <div class="banner-options">
+                <div class="setting-group">
+                    <label for="bannerText">Banner Metni:</label>
+                    <input type="text" id="bannerText" value="ADAM ASMACA" placeholder="Banner metni girin">
+                </div>
+                <div class="setting-group">
+                    <label for="bannerFont">Yazı Tipi:</label>
+                    <select id="bannerFont">
+                        <option value="'Press Start 2P', cursive">Pixel</option>
+                        <option value="'Creepster', cursive">Korku</option>
+                        <option value="'Bangers', cursive">Çizgi Roman</option>
+                        <option value="'Rubik Moonrocks', cursive">Uzay</option>
+                        <option value="'Permanent Marker', cursive">El Yazısı</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="bannerColor">Renk:</label>
+                    <input type="color" id="bannerColor" value="#6a5acd">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="game-banner">ADAM ASMACA</div>
+    <h1>Adam Asmaca</h1>
+    <div id="word-display"></div>
+    <div id="keyboard"></div>
+    <div id="animation-settings">
+        <button id="settings-toggle" class="settings-button">⚙️ Animasyon Ayarları</button>
+        <div id="settings-panel" class="settings-panel hidden">
+            <h3>Tuş Animasyonları</h3>
+            <div class="animation-options">
+                <label>
+                    <input type="radio" name="animation" value="none" checked>
+                    Animasyonsuz
+                </label>
+                <label>
+                    <input type="radio" name="animation" value="grow">
+                    Büyüme
+                </label>
+                <label>
+                    <input type="radio" name="animation" value="shake">
+                    Titreşim
+                </label>
+                <label>
+                    <input type="radio" name="animation" value="ripple">
+                    Dalga
+                </label>
+                <label>
+                    <input type="radio" name="animation" value="glow">
+                    Parlama
+                </label>
+                <label>
+                    <input type="radio" name="animation" value="flip">
+                    3D Döndürme
+                </label>
+                <label>
+                    <input type="radio" name="animation" value="pulse">
+                    Nabız
+                </label>
+            </div>
+        </div>
+    </div>
+    <div id="game-stats">
+        <div id="remaining-guesses">Kalan Hak: 6</div>
+        <div id="score">Skor: 0</div>
+    </div>
+    
+    <div id="message"></div>
+    <div id="color-controls">
+        <div class="color-slider">
+            <label for="redSlider">Kırmızı</label>
+            <input type="range" id="redSlider" min="0" max="255" value="30">
+        </div>
+        <div class="color-slider">
+            <label for="greenSlider">Yeşil</label>
+            <input type="range" id="greenSlider" min="0" max="255" value="30">
+        </div>
+        <div class="color-slider">
+            <label for="blueSlider">Mavi</label>
+            <input type="range" id="blueSlider" min="0" max="255" value="42">
+        </div>
+    </div>
+</div>
+<script>
+    const words = [
+        "ACCESS","ACİ","ADA","ADALAR","ADALET","ADALET HAKKI","ADANA","ADAPTIVE","ADVANCED","ADİL","AHLAK","AHLAKİ"
+,"AI","AKILLI TELEFON","AKVARYUM","AKŞAM","AKŞAM YEMEĞİ TARİFİ","ALGORITHM","ALGORITHMS","ALIŞVERİŞ","ALMANCA","ALTIN","AMELİYAT","AMELİYAT BAKIMI"
+,"ANA YEMEK TARİFİ","ANALOG","ANALYSIS","ANALYTICS","ANALYZER","ANAYASA","ANKARA","ANLAMAK","ANLAMLI","ANLAYIŞLI","ANLAŞMA","ANTALYA"
+,"ANTROPOLOJİ","ANTROPOLOJİK ARAŞTIRMA","ANTİBİYOTİK","ANTİK","ANİMASYON FİLM","APIAPPLICATION","ARA TATİL","ARABA","ARABESK MÜZİK","ARAMA","ARAPÇA","ARENA"
+,"ARKADAŞ","ARKEOLOJİ","ARKEOLOJİK ARAŞTIRMA","ARİTMETİK","ASKER","ASLAN","ASSEMBLY","ASTRONOMİ","AT","ATLETİZM KULÜBÜ","AVUKAT","AVUKATLIK OFİSİ"
+,"AY","AYDINLIK","AYI","AYLIK","AYRAN","AĞ","AİLE","AİLE DANIŞMANI","AŞAĞI","AŞI","AŞI KARTI","AŞI UYGULAMASI"
+,"AŞÇI","BACKEND","BAHARAT","BAHARATLI","BAKAN","BAKLAVA","BAKTERİ","BALE GÖSTERİSİ","BALIK","BALIK YEMİ","BALIKÇI","BANKA"
+,"BARINMA HAKKI","BARIŞ","BASKETBOL","BASKETBOL KULÜBÜ","BASKETBOL LİGİ","BASKETBOLCU","BAYRAM","BAYRAM TATİLİ","BAĞLANTI","BAŞARI","BAŞARMAK","BAŞKAN"
+,"BEDEN EĞİTİMİ DERSİ","BEJ","BELEDİYE","BELGESEL FİLM","BELİRSİZ","BENZER","BERBER","BESTE","BEYAZ","BINARY","BIOSYSTEM","BLOCKCHAIN"
+,"BLOG YAZARLIĞI","BLUES MÜZİK","BLUETOOTH","BOOLEAN","BORDO","BORÇ","BOZMAK","BULANIK","BULUT DURUMU","BULUTLU","BULUŞ","BURSA"
+,"BUSINESS","BUĞULAMA","BÖLGESEL","BÖLGESEL KALKINMA","BÖREK","BÜTÇE","BÜYÜK","BİLET","BİLGİ","BİLGİ EDİNME HAKKI","BİLGİSAYAR","BİLGİSAYAR MÜHENDİSLİĞİ"
+,"BİLGİSAYAR MÜHENDİSİ","BİLGİSAYAR PERAKENDE","BİLMEK","BİLİMSEL","BİLİMSEL ARAŞTIRMA","BİLİŞİM SEKTÖRÜ","BİREYSEL","BİSİKLET","BİSİKLET KULÜBÜ","BİSİKLET YARIŞI","BİSİKLETÇİ","BİTKİ"
+,"BİYOKÜTLE ENERJİSİ","BİYOLOJİ","BİYOLOJİ DERSİ","BİYOLOJİK","BİYOPSİ İŞLEMİ","CABLECACHE","CAPACITY","CEP TELEFONU","CESARET","CEZA","CIRCUIT","CLIENT"
+,"CLOUD","CODE","CODING","COMPILER","COMPLEX","COMPOSITION","COMPRESSION","COMPUTATIONCOMPUTE","COMPUTER","COMPUTING","CONCEPT","CONCURRENCY"
+,"CONFIGURATION","CONNECT","CONNECTION","CONSTRUCTION","COORDINATE","COORDINATES","COĞRAFYA","COĞRAFYA DERSİ","CROSSCROSSPLATFORM","CÖMERT","CİMRİ","DAKİKA"
+,"DANS ATÖLYESİ","DANS GÖSTERİSİ","DANS MÜZİĞİ","DATA","DATABASE","DAVA","DAĞ","DEBUGGING","DEFTER","DELİL","DEMOKRASİ","DENİZ"
+,"DEPLOYMENT","DEPO","DERGİ YAZARLIĞI","DERNEK","DERS","DERİNLEŞME","DESIGN","DESIGNING","DETAY","DEVALÜASYON","DEVELOPER","DEVELOPMENTDEVICES"
+,"DEVLET","DEĞNEK","DEĞİŞİM","DIGITAL","DISK","DISPLAY","DISTRIBUTE","DISTRIBUTION","DIŞ","DOCUMENT","DOKTOR","DOKTORA EĞİTİMİ"
+,"DONDURMA","DOST","DOSTLUK","DOĞA","DOĞA PARKI","DOĞRU","DOĞUM BAKIMI","DURAĞAN","DURUŞMA","DUYGUSAL","DUYMAK","DÜNYA"
+,"DÜRÜM","DÜRÜST","DÜZENLİ","DÜZENSİZ","DÜŞMAN","DÜŞÜNMEK","DİJİTAL","DİKKATLİ","DİKKATSİZ","DİKTATÖRLÜK","DİL","DİL TERAPİSİ"
+,"DİNSEL","DİNİ BAYRAM","DİYARBAKIR","DİYET","E-POSTA","E-TİCARET SİTESİ","ECZANE","EDEBİ","EDEBİYAT","EDEBİYAT DERSİ","EDEBİYAT FAKÜLTESİ","EEG CİHAZI"
+,"EFFICIENTEKSEN","EFSANEVİ","EKG CİHAZI","EKMEK","EKOLOJİ","EKONOMİ","EKONOMİ POLİTİKASI","EKONOMİK","EKONOMİK KALKINMA","EKONOMİST","EKŞİ","ELECTRONICS"
+,"ELEKTRONİK MÜZİK","ELEKTRONİK PERAKENDE","ELEKTRİK MÜHENDİSLİĞİ","ELEKTRİK MÜHENDİSİ","ELEMENT","ENCAPSULATION","ENCRYPTED","ENCRYPTION","ENDOSKOPİ CİHAZI","ENDÜSTRİ MÜHENDİSLİĞİ","ENERJİ SEKTÖRÜ","ENERJİ TASARRUFU"
+,"ENERJİ VERİMLİLİĞİ","ENFLASYON","ENGELLİ BAKICISI","ENGELİ BAKIM UZMANI","ENGINEERING","EQUATION","ERGOTERAPİ","ERKEN","ERROR","ERZURUM","ESKİ","ESKİŞEHİR"
+,"ESNAF","ETİK","EVDE BAKIM HİZMETİ","EVOLUTION","EVREN","EVRENSEL","EXAMPLE","EXCEPTIONEXECUTION","EXPERIMENT","EXPLORATION","EZGİ","EĞRİ"
+,"EĞİTİM FAKÜLTESİ","EĞİTİM FUARI","EĞİTİM HAKKI","EĞİTİM SEKTÖRÜ","EĞİTİMDE KALKINMA","EŞİTLİK","EŞİTLİK HAKKI","FALEZ","FARKLI","FARKLILIK","FATURA","FAİZ"
+,"FEATURE","FELSEFE","FELSEFE DERSİ","FEN FAKÜLTESİ","FERİBOT İSKELESİ","FESTİVAL","FIBER","FILE","FIND","FIRIN","FIRSAT","FIRTINALI"
+,"FLOW","FONKSİYONFRAMEWORK","FOTOĞRAF ATÖLYESİ","FOTOĞRAF MAKİNESİ","FOTOĞRAF SERGİSİ","FOTOĞRAFİK","FRANSIZCA","FREQUENCY","FRONTEND","FUNCTION","FUTBOL","FUTBOL KULÜBÜ"
+,"FUTBOL TURNUVASI","FUTBOLCU","FUTURE","FÜME","FİKİR","FİL","FİLM","FİYAT","FİZYOTERAPİ","FİZİK","FİZİK DERSİ","FİZİK TEDAVİ"
+,"FİZİKSEL","FİŞ","GALERİ","GARSON","GAZETE YAZARLIĞI","GAZETECİ","GAZİANTEP","GECE","GELECEK","GELENEK","GELENEKSEL","GELİR"
+,"GELİŞMEK","GELİŞİM","GEMİ","GENÇ","GENİŞLİK","GEOMETRY","GEOMETRİGIT","GEREKLİ","GERÇEK","GEYİK","GEZEGEN","GEZİ"
+,"GEÇ","GEÇMİŞ","GIDA FUARI","GIDA MÜHENDİSİ","GIDA SEKTÖRÜ","GOAL","GOL","GRAFİK","GRAPH","GRAPHIC","GRAPHICAL","GRAPHICS"
+,"GRID","GROUP","GRİ","GÖK GÜRÜLTÜSÜ","GÖKKUŞAĞI","GÖKYÜZÜ","GÖL","GÖRMEK","GÖSTERİM","GÜMÜŞ","GÜNEŞ","GÜNEŞ ENERJİSİ"
+,"GÜNEŞLİ","GÜNLÜK","GÜRÜLTÜLÜ","GÜVEN","GÜVENSİZ","GÜVENİLİR","GÜZEL","GÜZEL SANATLAR FAKÜLTESİ","GÜZERGAH","GİDER","GİRİŞİM","GİTARİST"
+,"GİZLİ","HAFTA","HAFTALIK","HAKSIZLIK","HAKİM","HALK MÜZİĞİ","HAPİS","HARD DİSK","HARDWAREHAREKET","HAREKET","HAREKETLİ","HARİTA"
+,"HARİTA MÜHENDİSLİĞİ","HASH","HASTA","HASTA BAKICISI","HASTA YATAĞI","HASTALIK","HASTANE","HASTANE BAKIM HİZMETİ","HAVA","HAVA DURUMU","HAVA TAHMİNİ","HAVAALANI"
+,"HAVAALANI TRANSFERİ","HAVALİMANI","HAVALİMANI SERVİSİ","HAYAL","HAYVAN","HAYVAN BARINAĞI","HAYVAN HAKLARI","HAYVAN YATAĞI","HAYVAN YEMİ","HAYVANAT BAHÇESİ","HEDEF","HELİKOPTER"
+,"HEMŞİRE","HEYECAN","HEYKEL","HEYKEL ATÖLYESİ","HEYKEL SERGİSİ","HEYKELTRAŞ","HIZLANDIRILMIŞ EĞİTİM","HIZLI","HOPARLÖR","HOŞGÖRÜLÜ","HUKUK","HUKUK BÜROSU"
+,"HUKUK FAKÜLTESİ","HUKUKSAL","HUKUKİ","HÜKÜMET","HİDROELEKTRİK ENERJİ","HİKAYE","HİNDİ","HİP HOP MÜZİK","HİSSETMEK","INFERENCE","INFRASTRUCTURE","INHERITANCE"
+,"INNOVATION","INPUT","INSIGHT","INSTALLATION","INTEGRATIONINTERFACE","INTERNET","INTERPRETER","ITERATION","IZGARA","JAPONCA","JAVA","JAVASCRIPT"
+,"JAZZ MÜZİK","JEOLOJİ MÜHENDİSLİĞİ","JEOLOJİ MÜHENDİSİ","JEOTERMAL ENERJİ","KABA","KADER","KAHRAMANMARAŞ","KAHVALTI TARİFİ","KAHVE","KAHVERENGİ","KALEM","KAMERA"
+,"KAMP ALANI","KAMPANYA","KAMU YÖNETİMİ","KAN TAHLİLİ","KANUN","KANYON","KAPLAN","KAPSAM","KAR DURUMU","KARANLIK","KARAR","KARGO"
+,"KARINCA","KARIŞIK","KARLI","KART","KASA","KASABA","KAYBETMEK","KAYMAKAM","KAYNAMIŞ","KAYSERİ","KAZANMAK","KEDİ"
+,"KEDİ MAMASI","KEK TARİFİ","KELEBEK","KEMANİST","KENTSEL","KESİN","KESİR","KEY","KEYWORDKEŞİF","KEÇİ","KIRMIZI","KISA"
+,"KISA FİLM","KIYI","KIZARMIŞ","KIŞ","KIŞ TATİLİ","KLASİK","KLASİK MÜZİK","KLAVYE","KOLAY","KOLTUK DEĞNEĞİ","KOMŞU","KONAKLAMA"
+,"KONFERANS","KONSER","KONUŞMA TERAPİSİ","KONUŞMAK","KONYA","KONİK","KORECE","KORKU","KORUMA ALANI","KOYUN","KOŞU","KOŞU YARIŞI"
+,"KOŞUCU","KREDİ","KUAFÖR","KULAKLIK","KULLANICI","KURABİYE TARİFİ","KURBAĞA","KURMAK","KURT","KUŞ","KUŞ KAFESİ","KUŞ YEMİ"
+,"KÖFTE","KÖPEK","KÖPEK MAMASI","KÖTÜ","KÖYSEL","KÖŞE","KÜLTÜR","KÜLTÜREL","KÜLTÜREL KALKINMA","KÜRE","KÜÇÜK","KİBAR"
+,"KİMLİK","KİMYA","KİMYA DERSİ","KİMYA MÜHENDİSLİĞİ","KİMYA MÜHENDİSİ","KİMYASAL","KİRALIK ARAÇ","KİRLİ","KİRPİ","KİTAP","KİTAP FUARI","KİŞİSEL"
+,"LABORATUVAR","LACİVERT","LANGUAGE","LEARNING","LEVEL","LEZZET","LOAD","LOGIC","LİDER","LİLA","LİMAN","LİMAN TRANSFERİ"
+,"LİSANS EĞİTİMİ","LİSE EĞİTİMİ","MACERA","MACHINE","MADDE BAĞIMLILIĞI UZMANI","MADEN MÜHENDİSLİĞİ","MADEN SEKTÖRÜ","MAHKEME","MAINTAIN","MAINTENANCEMANAGEMENT","MAKARNA","MAKİNE MÜHENDİSLİĞİ"
+,"MAKİNE MÜHENDİSİ","MALATYA","MALZEME","MANTIKLI","MAPPING","MARKET","MATEMATİK","MATEMATİK DERSİ","MATEMATİKSEL","MATERIAL","MATH","MATHEMATICS"
+,"MATRIX","MAVİ","MAYMUN","MAÇ","MAĞARA","MAĞAZA","MECHANICAL","MECLİS","MEDYA","MELODİ","MEMUR","MERAK"
+,"MERAKLI","MERHAMETLİ","MERSİN","MESLEKİ EĞİTİM","MESİRE YERİ","METAL MÜZİK","METHOD","METRO İSTASYONU","MEVSİM","MEVSİMSEL","MEYVE","MICRO"
+,"MOBİL UYGULAMA","MODE","MODELMODERN","MODERN","MODULE","MOLA","MOR","MOTOR","MOTORU","MOTOSİKLET","MOUSE","MR CİHAZI"
+,"MUHALEFET","MUHASEBE","MULTIMEDIA","MUTFAK","MUTLULUK","MÜCADELE","MÜHENDİS","MÜHENDİSLİK FAKÜLTESİ","MÜZİK","MÜZİK ATÖLYESİ","MÜZİK DERSİ","MÜZİK FUARI"
+,"MÜZİK KONSERİ","MÜZİK TERAPİSİ","MÜZİKAL","MÜZİSYEN","MİKROFON","MİKROP","MİKROÇİP","MİLLETVEKİLİ","MİLLİ","MİLLİ BAYRAM","MİLLİ PARK","MİLLİ TAKIM"
+,"MİMAR","MİTOLOJİ","MİTOLOJİK","MİTOLOJİK ARAŞTIRMA","NEFES ALMA CİHAZI","NEFRET","NEHİR","NEM ORANI","NET","NETWORK","NETWORKING","NOTA"
+,"OKUL","OKUL PSİKOLOĞU","OKUL TATİLİ","OLİMPİYAT","OLİMPİYAT OYUNLARI","OLİMPİYAT TAKIMI","OPERA GÖSTERİSİ","OPERA MÜZİĞİ","OPERATION","OPERATIONS","OPTIMIZATION","OPTIMIZE"
+,"ORMAN","ORTOPEDİK AYAKKABI","ORTOPEDİK YASTIK","OTEL","OTOBÜS","OTOBÜS DURAĞI","OTOGAR","OTOGAR TRANSFERİ","OTOMOTİV SEKTÖRÜ","OUTPUTPARADIGM","OVA","OY"
+,"OYUN","OYUN KONSOLLARI","OYUN ŞİRKETİ","OYUNCAK","OYUNCU","PARA","PARALLEL","PARAMETER","PARTITION","PARTİ","PASAPORT","PASTA"
+,"PASTA TARİFİ","PATH","PAZAR","PEDAGOG DANIŞMAN","PEMBE","PERFORMANCE","PEYNİR","PLAJ","PLAN","PLATFORM","PLATO","PLUGIN"
+,"POLYMORPHISM","POLİKLİNİK","POLİS","POLİTİKA","POP MÜZİK","PORT","PRACTICEPREDICT","PREPROCESSING","PROBLEM","PROCESSES","PROCESSING","PROCESSOR"
+,"PROGRAM","PROGRAMMING","PROJECT","PROJEKTÖR","PROPAGANDA","PROTOCOL","PRİZMA","PSİKOLOG DANIŞMAN","PSİKOLOJİ","PSİKOLOJİ DERSİ","PSİKOTERAPİ","PYTHONQUERY"
+,"PİKNİK ALANI","PİLATES","PİLATES DERSİ","PİLAV","PİST","PİYANİST","PİZZA","PİŞMİŞ","RADYO","RANGE","RECORD","REGGAE MÜZİK"
+,"REHABİLİTASYON MERKEZİ","REHBER","REHBER ÖĞRETMEN","REJİM","REKLAM","REKLAM YAZARLIĞI","REPOSITORY","REQUEST","RESEARCH","RESMİ TATİL","RESOURCE","RESSAM"
+,"RESİM","RESİM ATÖLYESİ","RESİM DERSİ","RESİM SERGİSİ","REZERVASYON","REÇEL","REÇETE","ROBOTICS","ROCK MÜZİK","ROMAN","ROMAN YAZARLIĞI","ROUTER"
+,"RUSÇA","RÖNTGEN CİHAZI","RÜYA","RÜZGAR","RÜZGAR ENERJİSİ","RÜZGAR HIZI","RÜZGARLI","RİTİM","SAAT","SABAH","SABIRLI","SABIRSIZ"
+,"SALATA","SALATA TARİFİ","SAMPLE","SAMSUN","SANAT","SANAT ATÖLYESİ","SANAT FUARI","SANAT TERAPİSİ","SANATSAL","SANATSAL ÇALIŞMA","SANAYİ FUARI","SANİYE"
+,"SARI","SATRANÇ","SATRANÇ KULÜBÜ","SATRANÇ TURNUVASI","SAVAŞ","SAVCI","SAYI","SAYISAL","SAĞLIK","SAĞLIK HAKKI","SAĞLIK SEKTÖRÜ","SAĞLIKTA KALKINMA"
+,"SCALABILITYSCALE","SCALING","SCHEDULE","SCHEME","SCIENCE","SCRIPTING","SEBZE","SECURITY","SEMPTOM","SEMİNER","SENARYO","SENARYO YAZARLIĞI"
+,"SENDİKA","SENSOR","SERAMİK ATÖLYESİ","SERGİ","SERUM UYGULAMASI","SERVER","SERVICES","SESSİZ","SET","SEVGİ","SEVGİLİ","SEYAHAT"
+,"SEÇME HAKKI","SEÇİLME HAKKI","SEÇİM","SICAK","SICAKLIK","SIGNALSIMPLE","SIMULATION","SINAV","SOCKET","SOFTWARE","SOLUTION","SOLUTIONS"
+,"SONBAHAR","SONRA","SORUMLULUK","SOSYAL","SOSYAL ARAŞTIRMA","SOSYAL HİZMET UZMANI","SOSYAL KALKINMA","SOSYAL MEDYA PLATFORMU","SOSYOLOJİ","SOSYOLOJİ DERSİ","SOĞUK","SPACE"
+,"SPOR KULÜBÜ","SPORCU","SPORTİF","SPORİF","SSD","STABILITY","STABLE","STADYUM","STAGE","STATISTICSSTORAGE","STRATEGY","STRUCTURE"
+,"STRUCTURES","SUÇ","SYMMETRY","SYNC","SYSTEM","SYSTEMATIC","SYSTEMS","SÜRDÜRÜLEBİLİR ENERJİ","SÜRDÜRÜLEBİLİR KALKINMA","SÜT","SİNCAP","SİNEK"
+,"SİNEMA","SİNEMA FİLMİ","SİNEMASAL","SİPARİŞ","SİRKE","SİS DURUMU","SİSLİ","SİVAS","SİVİL TOPLUM","SİVİL TOPLUM KURULUŞU","SİYAH","SİYASAL"
+,"SİYASET","SİYASET BİLİMİ","SİYASETÇİ","SİYASİ","TABLET","TABİAT REZERV","TAKIM","TAKSİ DURAĞI","TAKSİ HİZMETİ","TAKVİM","TAMİRCİ","TANI"
+,"TANSİYON ALETİ","TARAYICI","TARIM FUARI","TARTIŞMA","TARİF","TARİH","TARİH DERSİ","TARİHSEL","TARİHİ ARAŞTIRMA","TASKTASKS","TASMA","TAT"
+,"TATLI","TATLI TARİFİ","TATİL","TAVA","TAVUK","TAVŞAN","TECHNIQUES","TECHNOLOGY","TEDARİK","TEDAVİ","TEKERLEKLİ SANDALYE","TEKNOLOJİ"
+,"TEKNOLOJİ FUARI","TEKNOLOJİ GİRİŞİMİ","TEKNOLOJİK ARAŞTIRMA","TEKNİK","TEKNİSYEN","TEKSTİL SEKTÖRÜ","TEKİL","TELEFON","TELEKOMÜNİKASYON ŞİRKETİ","TELEVİZYON","TEMBEL","TEMİZ"
+,"TENCERE","TENİS","TENİS TURNUVASI","TERARYUM","TEREYAĞI","TESTING","TEŞHİS","THEORY","TIBBİ","TIBBİ GÖRÜNTÜLEME","TIMING","TIP FAKÜLTESİ"
+,"TOMOGRAFİ CİHAZI","TOOL","TOOLS","TOPLANTILARI","TOPLU TAŞIMA","TOPLUM","TOPLUMSAL","TOPRAK","TRABZON","TRAMVAY","TRANSFER","TRANSFER HİZMETİ"
+,"TRANSLATION","TRANSMISSIONTRANSPORT","TREN","TREN İSTASYONU","TURBO","TURKUAZ","TURNUVA","TURUNCU","TURİST","TURİZM FUARI","TURİZM SEKTÖRÜ","TURŞU"
+,"TUTUKLU","TUZLU","TÜKETMEK","TÜKETİCİ","TÜRK HALK MÜZİĞİ","TÜRK SANAT MÜZİĞİ","TÜRKÇE","TÜRKÜ","TÜRKİYE","TİCARET","TİCARET FUARI","TİLKİ"
+,"TİYATRAL","TİYATRO","TİYATRO ATÖLYESİ","TİYATRO OYUNU","TİYATRO YAZARLIĞI","ULAŞIM","ULTRASON CİHAZI","ULUSAL","ULUSAL FUAR","ULUSLARARASI FUAR","ULUSLARARASI İLİŞKİLER","UMUT"
+,"USB BELLEK","UYGULAMA","UYGUN","UZAK","UZAY","UZMANLIK EĞİTİMİ","UZUN","UÇAK","VAKIF","VALİ","VALİZ","VARIABLE"
+,"VATANDAŞ","VECTOR","VECTORS","VERGİ","VETERİNER KLİNİĞİ","VIRTUAL","VOLEYBOL","VOLEYBOL KULÜBÜ","VOLEYBOL MAÇI","VOLEYBOLCU","VOLKAN","VİRÜS"
+,"VİZE","WEB","WEBSİTESİ","WİFİ","YABANCI DİL","YAKIN","YAKLAŞIM","YANLIŞ","YAPIŞIK","YAPMAK","YAPTIRIM","YARATICI"
+,"YARATICI DRAMA","YARATICI YAZARLIK","YARATICILIK","YASA","YATIRIM","YAVAŞ","YAZ","YAZ TATİLİ","YAZAR","YAZICI","YAZILIM","YAZILIM MÜHENDİSLİĞİ"
+,"YAZILIM MÜHENDİSİ","YAZILIM ŞİRKETİ","YAĞ","YAĞIŞ DURUMU","YAĞMURLU","YAŞLI","YAŞLI BAKICISI","YAŞLI BAKIM UZMANI","YEMEK","YEMEK TARİFİ","YENİ","YENİ YIL TATİLİ"
+,"YENİLENEBİLİR ENERJİ","YENİÇIKTILAR","YEREL","YEREL KALKINMA","YETİŞKİN","YEŞİL","YEŞİL ALAN","YEŞİL ENERJİ","YIKMAK","YIL","YILAN","YILDIZ"
+,"YILLIK","YOGA","YOGA DERSİ","YOLCULUK","YOĞUN BAKIM","YOĞUN BAKIM BAKIMI","YOĞURT","YUKARI","YÜKSEK LİSANS EĞİTİMİ","YÜRÜTEÇ","YÜZME","YÜZME KULÜBÜ"
+,"YÜZME YARIŞI","YÜZÜCÜ","ZAMAN","ZEYTİN","ZOR","ZÜMRÜT","ZÜRAFA","ÇALIŞKAN","ÇALIŞMA HAKKI","ÇALIŞTAY","ÇAY","ÇAĞDAŞ"
+,"ÇEVRE","ÇEVRE KORUMA","ÇEVRE MÜHENDİSLİĞİ","ÇEVRE MÜHENDİSİ","ÇEVREDE KALKINMA","ÇOCUK","ÇOCUK BAKICISI","ÇOCUK GELİŞİM UZMANI","ÇOKLU","ÇORBA","ÇORBA TARİFİ","ÇÖL"
+,"ÇÖZÜM","ÇİFTÇİ","ÇİKOLATA","ÇİNCE","ÇİRKİN","ÖDEME","ÖFKE","ÖNCE","ÖNEMLİ","ÖNLİSANS EĞİTİMİ","ÖRDEK","ÖRÜMCEK"
+,"ÖYKÜ YAZARLIĞI","ÖZEL","ÖZEL EĞİTİM","ÖZGÜRLÜK","ÖZGÜRLÜK HAKKI","ÖĞLE","ÖĞLE YEMEĞİ TARİFİ","ÖĞRENCİ","ÖĞRENMEK","ÖĞRETMEK","ÖĞRETMEN","ÜLKE"
+,"ÜNİVERSTE","ÜRETMEK","ÜRÜN","ÜZÜNTÜ","İDEOLOJİ","İDRAR TAHLİLİ","İHALE","İHRACAT","İLAÇ","İLAÇ TEDAVİSİ","İLERLEMEK","İLERİ"
+,"İLETİŞİM FAKÜLTESİ","İLKBAHAR","İLKEL","İNANMAK","İNANÇ","İNANÇSAL","İNDİRİM","İNEK","İNGİLİZCE","İNSAN","İNSAN HAKLARI","İNTERNET"
+,"İNTERNET MODEMİ","İNTERNET ŞİRKETİ","İNŞAAT MÜHENDİSLİĞİ","İNŞAAT MÜHENDİSİ","İNŞAAT SEKTÖRÜ","İSPANYOLCA","İSTANBUL","İSTASYON","İSTASYON TRANSFERİ","İSTİRİHAT SANDALYESİ","İTALYANCA","İTHALAT"
+,"İYİ","İZMİR","İÇ","İÇECEK TARİFİ","ŞAHİT","ŞAKACI","ŞANLIURFA","ŞANS","ŞARKI","ŞAİR","ŞAŞKINLIK","ŞEHİR"
+,"ŞEHİR İÇİ ULAŞIM","ŞEHİRLERARASI ULAŞIM","ŞEKER","ŞEKER ÖLÇÜM CİHAZI","ŞELALE","ŞOFÖR","ŞİFRE","ŞİMDİ","ŞİMŞEK ÇAKMASI","ŞİRKET","ŞİİR","ŞİİR DİNLETİSİ"
+,"ŞİİR YAZARLIĞI"
+    ];
+
+    let chosenWord = "";
+    let displayedWord = "";
+    let incorrectGuesses = 0;
+    const maxIncorrectGuesses = 6;
+    let score = 0;
+    
+    const wordDisplay = document.getElementById('word-display');
+    const keyboardDiv = document.getElementById('keyboard');
+    const remainingGuessesDisplay = document.getElementById('remaining-guesses');
+    const messageDiv = document.getElementById('message');
+    const scoreDisplay = document.getElementById('score');
+    const themeToggle = document.getElementById('theme-toggle');
+    // Ayarlar paneli kontrolü
+    const settingsToggle = document.getElementById('settings-toggle');
+    const settingsPanel = document.getElementById('settings-panel');
+    const animationOptions = document.getElementsByName('animation');
+    // Banner ayarları için gerekli elementler
+    const bannerSettingsToggle = document.getElementById('banner-settings-toggle');
+    const bannerSettingsPanel = document.getElementById('banner-settings-panel');
+    const bannerText = document.getElementById('bannerText');
+    const bannerFont = document.getElementById('bannerFont');
+    const bannerColor = document.getElementById('bannerColor');
+    const gameBanner = document.getElementById('game-banner');
+
+// Banner ayarları panelini aç/kapa
+bannerSettingsToggle.addEventListener('click', () => {
+    bannerSettingsPanel.classList.toggle('hidden');
+});
+
+// Banner metnini güncelle
+bannerText.addEventListener('input', (e) => {
+    gameBanner.textContent = e.target.value;
+    localStorage.setItem('bannerText', e.target.value);
+});
+
+// Banner fontunu güncelle
+bannerFont.addEventListener('change', (e) => {
+    gameBanner.style.fontFamily = e.target.value;
+    localStorage.setItem('bannerFont', e.target.value);
+});
+
+// Banner rengini güncelle
+bannerColor.addEventListener('input', (e) => {
+    gameBanner.style.color = e.target.value;
+    localStorage.setItem('bannerColor', e.target.value);
+});
+
+// Sayfa yüklendiğinde kaydedilmiş banner ayarlarını yükle
+document.addEventListener('DOMContentLoaded', () => {
+    const savedText = localStorage.getItem('bannerText');
+    const savedFont = localStorage.getItem('bannerFont');
+    const savedColor = localStorage.getItem('bannerColor');
+
+    if (savedText) {
+        bannerText.value = savedText;
+        gameBanner.textContent = savedText;
+    }
+    if (savedFont) {
+        bannerFont.value = savedFont;
+        gameBanner.style.fontFamily = savedFont;
+    }
+    if (savedColor) {
+        bannerColor.value = savedColor;
+        gameBanner.style.color = savedColor;
+    }
+});
+
+settingsToggle.addEventListener('click', () => {
+    settingsPanel.classList.toggle('hidden');
+});
+
+// Animasyon değişikliğini dinle
+animationOptions.forEach(option => {
+    option.addEventListener('change', (e) => {
+        // Önce tüm animasyon sınıflarını kaldır
+        const buttons = document.querySelectorAll('.keyboard-button');
+        buttons.forEach(button => {
+            button.className = 'keyboard-button';
+        });
+
+        // Seçilen animasyonu ekle
+        if (e.target.value !== 'none') {
+            buttons.forEach(button => {
+                button.classList.add(`${e.target.value}-animation`);
+            });
+        }
+
+        // Ayarları localStorage'a kaydet
+        localStorage.setItem('preferredAnimation', e.target.value);
+    });
+});
+
+// Sayfa yüklendiğinde kaydedilmiş animasyonu yükle
+document.addEventListener('DOMContentLoaded', () => {
+    const savedAnimation = localStorage.getItem('preferredAnimation');
+    if (savedAnimation) {
+        const option = document.querySelector(`input[value="${savedAnimation}"]`);
+        if (option) {
+            option.checked = true;
+            const event = new Event('change');
+            option.dispatchEvent(event);
+        }
+    }
+});
+    const turkishQKeyboard = [
+        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
+        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ş', 'İ'],
+        ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç']
+    ];
+
+    // Tema değiştirme fonksiyonu
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isDarkTheme = !document.body.classList.contains('light-theme');
+        themeToggle.textContent = isDarkTheme ? '🌓 Tema Değiştir' : '🌓 Tema Değiştir';
+    });
+
+
+
+// Animasyon ayarlarını uygulayan yeni fonksiyon
+function applyCurrentAnimation() {
+    const currentAnimation = localStorage.getItem('preferredAnimation');
+    if (currentAnimation && currentAnimation !== 'none') {
+        const buttons = document.querySelectorAll('.keyboard-button');
+        buttons.forEach(button => {
+            // Önce tüm animasyon sınıflarını kaldır
+            button.className = 'keyboard-button';
+            // Seçili animasyonu ekle
+            button.classList.add(`${currentAnimation}-animation`);
+        });
+        
+        // Radio button'u da güncelle
+        const radioButton = document.querySelector(`input[name="animation"][value="${currentAnimation}"]`);
+        if (radioButton) {
+            radioButton.checked = true;
+        }
+    }
+}
+
+// startGame fonksiyonunu güncelle
+function startGame() {
+    chosenWord = words[Math.floor(Math.random() * words.length)];
+    displayedWord = chosenWord.split('').map(char => char === ' ' ? ' ' : '_').join('');
+    renderWordDisplay();
+    incorrectGuesses = 0;
+    messageDiv.textContent = "";
+    createKeyboard();
+    // Klavye oluşturulduktan sonra animasyonları uygula
+    applyCurrentAnimation();
+    updateRemainingGuesses();
+    updateScore();
+}
+
+// Animasyon değişikliğini dinleyen event listener'ı güncelle
+animationOptions.forEach(option => {
+    option.addEventListener('change', (e) => {
+        const selectedAnimation = e.target.value;
+        const buttons = document.querySelectorAll('.keyboard-button');
+        
+        buttons.forEach(button => {
+            // Önce tüm animasyon sınıflarını kaldır
+            button.className = 'keyboard-button';
+            // Eğer 'none' değilse yeni animasyonu ekle
+            if (selectedAnimation !== 'none') {
+                button.classList.add(`${selectedAnimation}-animation`);
+            }
+        });
+
+        // Ayarları localStorage'a kaydet
+        localStorage.setItem('preferredAnimation', selectedAnimation);
+    });
+});
+
+// Sayfa ilk yüklendiğinde
+document.addEventListener('DOMContentLoaded', () => {
+    applyCurrentAnimation();
+});
+
+function renderWordDisplay() {
+    wordDisplay.innerHTML = '';
+    displayedWord.split('').forEach(letter => {
+        // Eğer karakter boşluk ise, boş bir div ekle
+        if (letter === ' ') {
+            const spaceDiv = document.createElement('div');
+            spaceDiv.style.width = '20px'; // Boşluk genişliği
+            wordDisplay.appendChild(spaceDiv);
+        } else {
+            const letterBox = document.createElement('div');
+            letterBox.className = 'letter-box';
+            letterBox.textContent = letter;
+            wordDisplay.appendChild(letterBox);
+        }
+    });
+}
+
+function handleGuess(letter) {
+    if (displayedWord.includes(letter) || incorrectGuesses >= maxIncorrectGuesses) return;
+
+    let correctGuess = false;
+    let newDisplayedWord = '';
+    for (let i = 0; i < chosenWord.length; i++) {
+        if (chosenWord[i] === ' ') {
+            newDisplayedWord += ' '; // Boşlukları koru
+        } else if (chosenWord[i] === letter) {
+            newDisplayedWord += letter;
+            correctGuess = true;
+        } else {
+            newDisplayedWord += displayedWord[i];
+        }
+    }
+    displayedWord = newDisplayedWord;
+    renderWordDisplay();
+
+    const clickedButton = Array.from(keyboardDiv.querySelectorAll('.keyboard-button'))
+        .find(button => button.textContent === letter);
+
+    if (!correctGuess) {
+        incorrectGuesses++;
+        if (clickedButton) {
+            clickedButton.classList.add('incorrect');
+        }
+    } else {
+        if (clickedButton) {
+            clickedButton.classList.add('correct');
+        }
+    }
+
+    if (clickedButton) {
+        clickedButton.classList.add('disabled');
+        clickedButton.disabled = true;
+    }
+
+    updateRemainingGuesses();
+    checkGameStatus();
+}
+    
+    function renderWordDisplay() {
+        wordDisplay.innerHTML = '';
+        displayedWord.split('').forEach(letter => {
+            const letterBox = document.createElement('div');
+            letterBox.className = 'letter-box';
+            letterBox.textContent = letter;
+            wordDisplay.appendChild(letterBox);
+        });
+    }
+
+    function createKeyboard() {
+        keyboardDiv.innerHTML = '';
+        turkishQKeyboard.forEach(row => {
+            const keyboardRowDiv = document.createElement('div');
+            keyboardRowDiv.className = 'keyboard-row';
+            row.forEach(key => {
+                const button = document.createElement('button');
+                button.className = 'keyboard-button';
+                button.textContent = key;
+                button.addEventListener('click', () => handleGuess(key));
+                keyboardRowDiv.appendChild(button);
+            });
+            keyboardDiv.appendChild(keyboardRowDiv);
+        });
+    }
+
+    function updateScore() {
+        scoreDisplay.textContent = `Skor: ${score}`;
+    }
+
+    function handleGuess(letter) {
+        if (displayedWord.includes(letter) || incorrectGuesses >= maxIncorrectGuesses) return;
+
+        let correctGuess = false;
+        let newDisplayedWord = '';
+        for (let i = 0; i < chosenWord.length; i++) {
+            if (chosenWord[i] === letter) {
+                newDisplayedWord += letter;
+                correctGuess = true;
+            } else {
+                newDisplayedWord += displayedWord[i];
+            }
+        }
+        displayedWord = newDisplayedWord;
+        renderWordDisplay();
+
+        const clickedButton = Array.from(keyboardDiv.querySelectorAll('.keyboard-button'))
+            .find(button => button.textContent === letter);
+
+        if (!correctGuess) {
+            incorrectGuesses++;
+            if (clickedButton) {
+                clickedButton.classList.add('incorrect');
+            }
+        } else {
+            if (clickedButton) {
+                clickedButton.classList.add('correct');
+            }
+        }
+
+        if (clickedButton) {
+            clickedButton.classList.add('disabled');
+            clickedButton.disabled = true;
+        }
+
+        updateRemainingGuesses();
+        checkGameStatus();
+    }
+
+    function updateRemainingGuesses() {
+        remainingGuessesDisplay.textContent = `Kalan Hak: ${maxIncorrectGuesses - incorrectGuesses}`;
+    }
+
+    function checkGameStatus() {
+        if (displayedWord === chosenWord) {
+            messageDiv.textContent = "Tebrikler, kazandınız!";
+            score += 100;
+            endGame();
+        } else if (incorrectGuesses >= maxIncorrectGuesses) {
+            messageDiv.textContent = `Kaybettiniz! Doğru kelime: ${chosenWord}`;
+            score = Math.max(0, score - 50);
+            endGame();
+        }
+        updateScore();
+    }
+
+    function endGame() {
+        setTimeout(() => {
+            const playAgain = confirm("Tekrar oynamak ister misiniz?");
+            if (playAgain) {
+                startGame();
+            } else {
+                messageDiv.textContent = `Oyun Bitti. Skorunuz: ${score}`;
+                keyboardDiv.innerHTML = "";
+            }
+        }, 500);
+    }
+
+    document.addEventListener('keydown', (event) => {
+        const letter = event.key.toUpperCase();
+        if (turkishQKeyboard.flat().includes(letter)) {
+            handleGuess(letter);
+        }
+    });
+// Renk kontrolleri için event listener'lar
+const redSlider = document.getElementById('redSlider');
+const greenSlider = document.getElementById('greenSlider');
+const blueSlider = document.getElementById('blueSlider');
+
+function updateBackgroundColor() {
+    const red = redSlider.value;
+    const green = greenSlider.value;
+    const blue = blueSlider.value;
+    
+    // Ana renk
+    const mainColor = `rgb(${red}, ${green}, ${blue})`;
+    // Biraz daha koyu renk için
+    const darkerColor = `rgb(${Math.max(0, red-30)}, ${Math.max(0, green-30)}, ${Math.max(0, blue-30)})`;
+    
+    // Gradient arka plan
+    document.body.style.background = `linear-gradient(135deg, ${mainColor}, ${darkerColor})`;
+}
+
+// Slider'lara event listener ekle
+redSlider.addEventListener('input', updateBackgroundColor);
+greenSlider.addEventListener('input', updateBackgroundColor);
+blueSlider.addEventListener('input', updateBackgroundColor);
+
+// Sayfa yüklendiğinde başlangıç rengini ayarla
+updateBackgroundColor();
+    // Oyunu başlat
+    startGame();
+</script>
+</body>
+</html>
